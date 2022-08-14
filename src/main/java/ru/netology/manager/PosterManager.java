@@ -1,43 +1,44 @@
 package ru.netology.manager;
 
 import ru.netology.domain.Films;
+import ru.netology.repository.PosterRepository;
 
 public class PosterManager {
-    private Films[] films = new Films[0];
-    private int currentMoviesLenght = 10;
-
-    public PosterManager() {
+    private PosterRepository repository;
+    public PosterManager(PosterRepository repository) {
+        this.repository = repository;
+    }
+    public void addon(Films item) {
+        repository.save(item);
     }
 
-    public PosterManager(int currentMoviesLenght) {
-
-        this.currentMoviesLenght = currentMoviesLenght;
-    }
-
-    public void addon(Films movie) {
-        Films[] tmp = new Films[films.length + 1];
-        System.arraycopy(films, 0, tmp, 0, films.length);
-        tmp[tmp.length - 1] = movie;
-        this.films = tmp;
-
+    public void removeAll() {
+        repository.removeAll();
     }
 
     public Films[] findAll() {
-        return this.films;
-
+        Films[] film = repository.findAll();
+        return film;
     }
 
-    public Films[] findLast() {
-        int resultLenght;
-        if (films.length < currentMoviesLenght) {
-            resultLenght = films.length;
-        } else {
-            resultLenght = currentMoviesLenght;
-        }
-        Films[] result = new Films[resultLenght];
-        for (int i = 0; i < resultLenght; i++) {
-            result[i] = films[films.length - 1 - i];
+    public Films[] findById(int id) {
+        Films[] film = repository.findById(id);
+        return film;
+    }
+
+    public Films[] getAll() {
+        Films[] items = repository.findAll();
+        Films[] result = new Films[items.length];
+        for (int i = 0; i < result.length; i++) {
+            int index = items.length - i - 1;
+            result[i] = items[index];
         }
         return result;
     }
+
+    public void removeById(int id) {
+        repository.removeById(id);
+    }
+
 }
+

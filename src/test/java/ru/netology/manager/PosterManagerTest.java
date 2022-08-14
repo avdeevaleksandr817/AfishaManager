@@ -1,119 +1,84 @@
 package ru.netology.manager;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import ru.netology.domain.Films;
+import ru.netology.repository.PosterRepository;
 
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.mockito.Mockito.*;
 
 class PosterManagerTest {
 
-    PosterManager poster = new PosterManager();
+    private PosterRepository repository = Mockito.mock(PosterRepository.class);
+    private PosterManager manager = new PosterManager(repository);
 
-    Films first = new Films(1, "Бладшот", "Боевик", false);
-    Films second = new Films(2, "Вперед", "Мультфильм", false);
-    Films third = new Films(3, "Отель Белград", "Комедия", false);
-    Films fourth = new Films(4, "Джентельмены", "Боевик", false);
-    Films fifth = new Films(5, "Человек-невидимка", "Ужасы", false);
-    Films sixth = new Films(6, "Тролли. Мировой тур", "Мультфильм", true);
-    Films seventh = new Films(7, "Номер Один", "Комедия", true);
-    Films eighth = new Films(8, "Наемник", "Боевик", false);
-    Films ninth = new Films(9, "Хочу замуж", "Комедия", false);
-    Films tenth = new Films(10, "Лулу и Бриггс", "Комедия", false);
-    Films eleventh = new Films(11, "Парни под прикрытием", "Боевик", false);
-    Films twelve = new Films(12, "Мистер Нокаут", "Спорт", false);
+
+
+    private Films first = new Films(1, "Бладшот", "Боевик", false);
+    private Films second = new Films(2, "Вперед", "Мультфильм", false);
+    private Films third = new Films(3, "Отель Белград", "Комедия", false);
+    private Films fourth = new Films(4, "Джентельмены", "Боевик", false);
+    private Films fifth = new Films(5, "Человек-невидимка", "Ужасы", false);
+    private Films sixth = new Films(6, "Тролли. Мировой тур", "Мультфильм", true);
+    private Films seventh = new Films(7, "Номер Один", "Комедия", true);
+    private Films eighth = new Films(8, "Наемник", "Боевик", false);
+    private Films ninth = new Films(9, "Хочу замуж", "Комедия", false);
+    private Films tenth = new Films(10, "Лулу и Бриггс", "Комедия", false);
+    private Films eleventh = new Films(11, "Парни под прикрытием", "Боевик", false);
+    private Films twelve = new Films(12, "Мистер Нокаут", "Спорт", false);
 
     @Test
-    void shouldShowTenMovies() {
+    public void shouldShowAllFilms() {
+        Films[] returned = {first, second, third, fourth, fifth, sixth,seventh, eighth};
+        doReturn(returned).when(repository).findAll();
 
-        poster.addon(first);
-        poster.addon(second);
-        poster.addon(third);
-        poster.addon(fourth);
-        poster.addon(fifth);
-        poster.addon(sixth);
-        poster.addon(seventh);
-        poster.addon(eighth);
-        poster.addon(ninth);
-        poster.addon(tenth);
-        poster.addon(eleventh);
-        poster.addon(twelve);
+        manager.addon(first);
+        manager.addon(second);
+        manager.addon(third);
+        manager.addon(fourth);
+        manager.addon(fifth);
+        manager.addon(sixth);
+        manager.addon(seventh);
+        manager.addon(eighth);
+        manager.addon(ninth);
+        manager.addon(tenth);
+        manager.addon(eleventh);
+        manager.addon(twelve);
 
-        Films[] expected = new Films[]{
-                twelve, eleventh, tenth, ninth, eighth, seventh, sixth, fifth, fourth, third};
+        Films[] expected = { first, second, third, fourth, fifth, sixth,seventh, eighth };
+        Films[] actual = manager.findAll();
 
-        assertArrayEquals(expected, poster.findLast());
+        Assertions.assertArrayEquals(expected, actual);
+
+        verify(repository).findAll();
     }
 
     @Test
-    void shouldShowAllMovies() {
+    public void shouldShowEighthLastFilms() {
+        Films[] returned = {first, second, third, fourth, fifth, sixth,seventh, eighth};
+        doReturn(returned).when(repository).findAll();
+        when(repository.getFilmLimit()).thenReturn(10);
 
-        poster.addon(first);
-        poster.addon(second);
-        poster.addon(third);
-        poster.addon(fourth);
-        poster.addon(fifth);
-        poster.addon(sixth);
-        poster.addon(seventh);
-        poster.addon(eighth);
-        poster.addon(ninth);
-        poster.addon(tenth);
+        manager.addon(first);
+        manager.addon(second);
+        manager.addon(third);
+        manager.addon(fourth);
+        manager.addon(fifth);
+        manager.addon(sixth);
+        manager.addon(seventh);
+        manager.addon(eighth);
+        manager.addon(ninth);
+        manager.addon(tenth);
+        manager.addon(eleventh);
+        manager.addon(twelve);
 
-        Films[] expected = new Films[]{
-                tenth, ninth, eighth, seventh, sixth, fifth, fourth, third, second, first};
+        Films[] expected = { eighth, seventh, sixth, fifth, fourth, third, second, first };
+        Films[] actual = manager.getAll();
 
-        assertArrayEquals(expected, poster.findLast());
+        Assertions.assertArrayEquals(expected, actual);
+
+        verify(repository).findAll();
     }
-
-    @Test
-    void shouldShowMoviesUnderTen() {
-
-        poster.addon(first);
-        poster.addon(second);
-        poster.addon(third);
-        poster.addon(fourth);
-        poster.addon(fifth);
-        poster.addon(sixth);
-
-        Films[] expected = new Films[]{
-                sixth, fifth, fourth, third, second, first};
-
-        assertArrayEquals(expected, poster.findLast());
-    }
-
-    @Test
-    void shouldShowMoviesBelowTenCurrentMoviesLenght() {
-
-        PosterManager poster = new PosterManager(6);
-
-
-        poster.addon(first);
-        poster.addon(second);
-        poster.addon(third);
-        poster.addon(fourth);
-        poster.addon(fifth);
-        poster.addon(sixth);
-        poster.addon(seventh);
-        poster.addon(eighth);
-        poster.addon(ninth);
-        poster.addon(tenth);
-
-        Films[] expected = new Films[]{
-                tenth, ninth, eighth, seventh, sixth, fifth};
-
-        assertArrayEquals(expected, poster.findLast());
-    }
-
-    @Test
-    void findLast() {
-        PosterManager poster = new PosterManager(4);
-
-        for (int i = 1; i <= 10; i++) {
-            poster.addon(new Films(i, "test" + i, "комедия", true));
-        }
-
-        Films[] actual = poster.findLast();
-
-        assertEquals(4, actual.length);
-    }
-
 }
